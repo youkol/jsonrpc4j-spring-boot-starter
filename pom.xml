@@ -28,7 +28,7 @@
 
   <groupId>com.youkol.support.jsonrpc4j</groupId>
   <artifactId>jsonrpc4j-spring-boot-starter</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>Youkol::jsonrpc4j-spring-boot-starter</name>
