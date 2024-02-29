@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+    Copyright (C) 2024 the original author or authors.
+
+    Licensed under the Apache License, Version 2.0 (the "License");
+    you may not use this file except in compliance with the License.
+    You may obtain a copy of the License at
+
+        http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing, software
+    distributed under the License is distributed on an "AS IS" BASIS,
+    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+    See the License for the specific language governing permissions and
+    limitations under the License.
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.youkol</groupId>
+    <artifactId>youkol-parent</artifactId>
+    <version>5</version>
+    <relativePath />
+  </parent>
+
+  <groupId>com.youkol.support.jsonrpc4j</groupId>
+  <artifactId>jsonrpc4j-spring-boot-starter</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Youkol::jsonrpc4j-spring-boot-starter</name>
+  <description>spring boot starter for jsonrpc4j</description>
+  <url>https://github.com/youkol/jsonrpc4j-spring-boot-starter</url>
+
+  <inceptionYear>2024</inceptionYear>
+  <organization>
+    <name>youkol.com</name>
+    <url>http://www.youkol.com/</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+  </licenses>
+
+  <developers>
+    <developer>
+      <name>jackiea</name>
+      <email>jackiea_21@163.com</email>
+      <organizationUrl>https://github.com/youkol</organizationUrl>
+      <roles>
+        <role>developer</role>
+      </roles>
+      <timezone>+8</timezone>
+    </developer>
+  </developers>
+
+  <scm>
+    <connection>scm:git:git://github.com/youkol/jsonrpc4j-spring-boot-starter.git</connection>
+    <developerConnection>scm:git:git@github.com:youkol/jsonrpc4j-spring-boot-starter.git</developerConnection>
+    <url>https://github.com/youkol/jsonrpc4j-spring-boot-starter</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub Issue Management</system>
+    <url>https://github.com/youkol/jsonrpc4j-spring-boot-starter/issues</url>
+  </issueManagement>
+
+  <properties>
+    <java.version>1.8</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.resources.sourceEncoding>UTF-8</project.resources.sourceEncoding>
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+
+    <spring.boot.version>2.7.18</spring.boot.version>
+    <jsonrpc4j.version>1.6</jsonrpc4j.version>
+    <javax-portlet.version>3.0.1</javax-portlet.version>
+    <javax-jws.version>1.1</javax-jws.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>com.github.briandilley.jsonrpc4j</groupId>
+      <artifactId>jsonrpc4j</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>javax.portlet</groupId>
+      <artifactId>portlet-api</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>javax.jws</groupId>
+      <artifactId>javax.jws-api</artifactId>
+      <optional>true</optional>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-devtools</artifactId>
+      <scope>runtime</scope>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-configuration-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure-processor</artifactId>
+      <optional>true</optional>
+    </dependency>
+  </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring.boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>com.github.briandilley.jsonrpc4j</groupId>
+        <artifactId>jsonrpc4j</artifactId>
+        <version>${jsonrpc4j.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.portlet</groupId>
+        <artifactId>portlet-api</artifactId>
+        <version>${javax-portlet.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>javax.jws</groupId>
+        <artifactId>javax.jws-api</artifactId>
+        <version>${javax-jws.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+</project>
