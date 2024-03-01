@@ -30,7 +30,7 @@ import com.googlecode.jsonrpc4j.JsonRpcBasicServer;
 @ConfigurationProperties(prefix = JsonRpcProperties.JSONRPC_PREFIX)
 public class JsonRpcProperties {
 
-    public static final String JSONRPC_PREFIX = "wkrj.jsonrpc";
+    public static final String JSONRPC_PREFIX = "youkol.jsonrpc";
 
     private boolean enabled = true;
 

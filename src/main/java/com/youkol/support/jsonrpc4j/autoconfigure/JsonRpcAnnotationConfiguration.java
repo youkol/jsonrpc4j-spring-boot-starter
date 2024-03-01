@@ -120,7 +120,7 @@ public class JsonRpcAnnotationConfiguration {
         try {
             return new URL(baseUrl);
         } catch (MalformedURLException ex) {
-            throw new IllegalArgumentException("wkrj.jsonrpc.client.baseUrl is illegal.", ex);
+            throw new IllegalArgumentException("JsonRpcClient baseUrl is illegal.", ex);
         }
     }
 }
