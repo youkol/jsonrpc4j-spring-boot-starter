@@ -52,7 +52,7 @@ youkol:
 
 > @JsonRpcMultiServiceName: If you want to use multiple services, you can use this annotation for special the service name.
 >
-> JsonRpcBaseService is the base class for all services. You must extends it on your interface, it will be auto injected by `JsonRpcMultiServer.addService`
+> `JsonRpcBaseService` is the base class for all services. You must extends it on your interface, it will be auto injected by `JsonRpcMultiServer.addService`
 
 ```java
 @JsonRpcMultiServiceName("User")
@@ -115,6 +115,7 @@ body:
 * @JsonRpcService
 * @AutoJsonRpcServiceImpl
 * @JsonRpcParam
+* @JsonRpcMethod
 
 #### 1.4.1. Java Code for Annotations
 
