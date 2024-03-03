@@ -23,7 +23,7 @@ Spring boot starter for jsonrpc4j.
 ```yaml
 # Default value for jsonrpc4j-spring-boot-starter
 youkol:
-  jsonrpc:
+  jsonrpc4j:
     enabled: true
     server:
       enabled: true
@@ -32,6 +32,7 @@ youkol:
       allow-extra-params: false
       allow-less-params: false
       should-log-invocation-errors: true
+      parallel-enabled: false
       parallel-batch-processing-timeout: 30s
       content-type: "application/json-rpc"
       welcome:
@@ -44,6 +45,7 @@ youkol:
       base-url:
       enabled: false
       scan-package:
+      content-type:
 ```
 
 ### 1.3. Use Servlet Mode (`JsonRpcMultiServer`)
@@ -181,3 +183,11 @@ body:
     "id": "1"
 }
 ```
+
+### 1.5. Parallel batch an Array filled with Request objects
+
+The `ExecutorService` utilizes `ThreadPoolExecutor` as its default implementation.
+It is configured through `ThreadPoolTaskExecutor` from `TaskExecutionAutoConfiguration`.
+As a result, the `ExecutorService` and `@Async` share a thread pool.
+
+You can customize an `ExecutorService` to replace it.

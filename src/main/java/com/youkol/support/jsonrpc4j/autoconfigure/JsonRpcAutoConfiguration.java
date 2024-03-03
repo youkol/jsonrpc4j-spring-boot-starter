@@ -22,15 +22,18 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -56,9 +59,9 @@ import com.youkol.support.jsonrpc4j.servlet.JsonRpcServlet;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ JsonRpcServlet.class, JsonRpcServer.class })
+@EnableConfigurationProperties(JsonRpcProperties.class)
 @ConditionalOnProperty(prefix = JsonRpcProperties.JSONRPC_PREFIX, name = "enabled", matchIfMissing = true)
 @Import({ WelcomeConfiguration.class, JsonRpcServerServletConfiguration.class, JsonRpcAnnotationConfiguration.class })
-@EnableConfigurationProperties(JsonRpcProperties.class)
 public class JsonRpcAutoConfiguration {
 
     @Bean
@@ -73,7 +76,7 @@ public class JsonRpcAutoConfiguration {
     @ConditionalOnMissingBean
     public JsonRpcServer jsonRpcServer(JsonRpcProperties jsonRpcProperties,
             ObjectProvider<ObjectMapper> objectMapper,
-            ObjectProvider<? extends JsonRpcBaseService> jsonRpcBaseService,
+            List<? extends JsonRpcBaseService> jsonRpcBaseService,
             ObjectProvider<DelegatingRequestInterceptor> requestInterceptor,
             ObjectProvider<ErrorResolver> errorResolver,
             ObjectProvider<JsonRpcInterceptor> jsonRpcInterceptor,
@@ -118,8 +121,8 @@ public class JsonRpcAutoConfiguration {
     }
 
     private void addService(JsonRpcMultiServer jsonRpcMultiServer,
-            ObjectProvider<? extends JsonRpcBaseService> jsonRpcBaseService) {
-        jsonRpcBaseService.forEach(service -> {
+            List<? extends JsonRpcBaseService> jsonRpcBaseService) {
+        jsonRpcBaseService.stream().forEach(service -> {
             JsonRpcMultiServiceName serviceNameAnnotation = AnnotationUtils.findAnnotation(service.getClass(),
                     JsonRpcMultiServiceName.class);
             if (serviceNameAnnotation == null) {
@@ -143,6 +146,19 @@ public class JsonRpcAutoConfiguration {
     private void customize(JsonRpcServer jsonRpcServer, List<JsonRpcServerCustomizer> customizers) {
         for (JsonRpcServerCustomizer customizer : customizers) {
             customizer.customize(jsonRpcServer);
+        }
+    }
+
+    @Configuration(proxyBeanMethods = false)
+    @AutoConfigureAfter(TaskExecutionAutoConfiguration.class)
+    @ConditionalOnBean(ThreadPoolTaskExecutor.class)
+    @ConditionalOnProperty(prefix = JsonRpcProperties.JSONRPC_PREFIX, name = "server.parallel-enabled", matchIfMissing = false)
+    public static class JsonRpcServerParallelBatchConfiguration {
+
+        @Bean
+        @ConditionalOnMissingBean
+        public ExecutorService executorService(ThreadPoolTaskExecutor taskExecutor) {
+            return taskExecutor.getThreadPoolExecutor();
         }
     }
 

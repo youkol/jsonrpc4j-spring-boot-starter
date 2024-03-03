@@ -30,7 +30,7 @@ import com.googlecode.jsonrpc4j.JsonRpcBasicServer;
 @ConfigurationProperties(prefix = JsonRpcProperties.JSONRPC_PREFIX)
 public class JsonRpcProperties {
 
-    public static final String JSONRPC_PREFIX = "youkol.jsonrpc";
+    public static final String JSONRPC_PREFIX = "youkol.jsonrpc4j";
 
     private boolean enabled = true;
 
@@ -127,6 +127,8 @@ public class JsonRpcProperties {
 
         private boolean shouldLogInvocationErrors = true;
 
+        private boolean parallelEnabled = false;
+
         private Duration parallelBatchProcessingTimeout = Duration.ofSeconds(30);
 
         private String contentType = JsonRpcBasicServer.JSONRPC_CONTENT_TYPE;
@@ -187,6 +189,14 @@ public class JsonRpcProperties {
             this.shouldLogInvocationErrors = shouldLogInvocationErrors;
         }
 
+        public boolean getParallelEnabled() {
+            return this.parallelEnabled;
+        }
+
+        public void setParallelEnabled(boolean parallelEnabled) {
+            this.parallelEnabled = parallelEnabled;
+        }
+
         public Duration getParallelBatchProcessingTimeout() {
             return this.parallelBatchProcessingTimeout;
         }
@@ -213,6 +223,8 @@ public class JsonRpcProperties {
 
         private String scanPackage;
 
+        private String contentType;
+
         public boolean getEnabled() {
             return this.enabled;
         }
@@ -235,6 +247,14 @@ public class JsonRpcProperties {
 
         public void setScanPackage(String scanPackage) {
             this.scanPackage = scanPackage;
+        }
+
+        public String getContentType() {
+            return this.contentType;
+        }
+
+        public void setContentType(String contentType) {
+            this.contentType = contentType;
         }
 
     }
