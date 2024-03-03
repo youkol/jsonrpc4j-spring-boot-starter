@@ -49,7 +49,6 @@ import com.youkol.support.jsonrpc4j.server.DelegatingRequestInterceptor;
 import com.youkol.support.jsonrpc4j.server.JsonRpcMultiServer;
 import com.youkol.support.jsonrpc4j.server.JsonRpcMultiServiceName;
 import com.youkol.support.jsonrpc4j.service.JsonRpcBaseService;
-import com.youkol.support.jsonrpc4j.servlet.JsonRpcServlet;
 
 /**
  * Auto-configuration for the {@link JsonRpcServer}
@@ -58,7 +57,7 @@ import com.youkol.support.jsonrpc4j.servlet.JsonRpcServlet;
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ JsonRpcServlet.class, JsonRpcServer.class })
+@ConditionalOnClass({ JsonRpcServer.class, JsonRpcMultiServer.class, ObjectMapper.class })
 @EnableConfigurationProperties(JsonRpcProperties.class)
 @ConditionalOnProperty(prefix = JsonRpcProperties.JSONRPC_PREFIX, name = "enabled", matchIfMissing = true)
 @Import({ WelcomeConfiguration.class, JsonRpcServerServletConfiguration.class, JsonRpcAnnotationConfiguration.class })
@@ -74,6 +73,7 @@ public class JsonRpcAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnProperty(prefix = JsonRpcProperties.JSONRPC_PREFIX, name = "server.enabled", matchIfMissing = true)
     public JsonRpcServer jsonRpcServer(JsonRpcProperties jsonRpcProperties,
             ObjectProvider<ObjectMapper> objectMapper,
             List<? extends JsonRpcBaseService> jsonRpcBaseService,
