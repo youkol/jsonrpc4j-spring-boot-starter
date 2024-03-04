@@ -63,103 +63,110 @@ import com.youkol.support.jsonrpc4j.service.JsonRpcBaseService;
 @Import({ WelcomeConfiguration.class, JsonRpcServerServletConfiguration.class, JsonRpcAnnotationConfiguration.class })
 public class JsonRpcAutoConfiguration {
 
-    @Bean
-    @ConditionalOnBean(RequestInterceptor.class)
-    public DelegatingRequestInterceptor delegatingRequestInterceptor(
-            ObjectProvider<RequestInterceptor> requestInterceptor) {
-        List<RequestInterceptor> interceptors = requestInterceptor.orderedStream().collect(Collectors.toList());
-        return new DelegatingRequestInterceptor(interceptors);
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(prefix = JsonRpcProperties.JSONRPC_PREFIX, name = "server.enabled", matchIfMissing = true)
-    public JsonRpcServer jsonRpcServer(JsonRpcProperties jsonRpcProperties,
-            ObjectProvider<ObjectMapper> objectMapper,
-            List<? extends JsonRpcBaseService> jsonRpcBaseService,
-            ObjectProvider<DelegatingRequestInterceptor> requestInterceptor,
-            ObjectProvider<ErrorResolver> errorResolver,
-            ObjectProvider<JsonRpcInterceptor> jsonRpcInterceptor,
-            ObjectProvider<InvocationListener> invocationListener,
-            ObjectProvider<ConvertedParameterTransformer> convertedParameterTransformer,
-            ObjectProvider<HttpStatusCodeProvider> httpStatusCodeProvider,
-            ObjectProvider<ExecutorService> batchExecutorService,
-            List<JsonRpcServerCustomizer> jsonRpcServerCustomizers) {
-        JsonRpcMultiServer jsonRpcServer = new JsonRpcMultiServer(objectMapper.getIfAvailable(ObjectMapper::new));
-
-        jsonRpcServer.setBackwardsCompatible(jsonRpcProperties.getServer().getBackwardsCompatible());
-        jsonRpcServer.setAllowLessParams(jsonRpcProperties.getServer().getAllowLessParams());
-        jsonRpcServer.setAllowExtraParams(jsonRpcProperties.getServer().getAllowExtraParams());
-        jsonRpcServer.setRethrowExceptions(jsonRpcProperties.getServer().getRethrowExceptions());
-        jsonRpcServer.setShouldLogInvocationErrors(jsonRpcProperties.getServer().getShouldLogInvocationErrors());
-
-        requestInterceptor.ifAvailable(jsonRpcServer::setRequestInterceptor);
-        errorResolver.ifAvailable(jsonRpcServer::setErrorResolver);
-
-        List<JsonRpcInterceptor> jsonRpcInterceptors = jsonRpcInterceptor.orderedStream().collect(Collectors.toList());
-        if (!CollectionUtils.isEmpty(jsonRpcInterceptors)) {
-            jsonRpcServer.setInterceptorList(jsonRpcInterceptors);
-        }
-
-        invocationListener.ifAvailable(jsonRpcServer::setInvocationListener);
-        convertedParameterTransformer.ifAvailable(jsonRpcServer::setConvertedParameterTransformer);
-        httpStatusCodeProvider.ifAvailable(jsonRpcServer::setHttpStatusCodeProvider);
-
-        batchExecutorService.ifAvailable(jsonRpcServer::setBatchExecutorService);
-        jsonRpcServer.setParallelBatchProcessingTimeout(
-                jsonRpcProperties.getServer().getParallelBatchProcessingTimeout().toMillis());
-
-        if (StringUtils.hasText(jsonRpcProperties.getServer().getContentType())) {
-            jsonRpcServer.setContentType(jsonRpcProperties.getServer().getContentType());
-        }
-
-        this.addService(jsonRpcServer, jsonRpcBaseService);
-
-        this.customize(jsonRpcServer, jsonRpcServerCustomizers);
-
-        return jsonRpcServer;
-    }
-
-    private void addService(JsonRpcMultiServer jsonRpcMultiServer,
-            List<? extends JsonRpcBaseService> jsonRpcBaseService) {
-        jsonRpcBaseService.stream().forEach(service -> {
-            JsonRpcMultiServiceName serviceNameAnnotation = AnnotationUtils.findAnnotation(service.getClass(),
-                    JsonRpcMultiServiceName.class);
-            if (serviceNameAnnotation == null) {
-                return;
-            }
-
-            if (!StringUtils.hasText(serviceNameAnnotation.value())) {
-                throw new IllegalArgumentException("The value of JsonRpcMultiServiceNamed annotation must not be null");
-            }
-
-            Class<?> serviceInterface = Stream.of(service.getClass().getInterfaces())
-                    .filter(Objects::nonNull)
-                    .filter(t -> !Objects.equals(t.getCanonicalName(), JsonRpcBaseService.class.getCanonicalName()))
-                    .findFirst()
-                    .orElse(null);
-
-            jsonRpcMultiServer.addService(serviceNameAnnotation.value(), service, serviceInterface);
-        });
-    }
-
-    private void customize(JsonRpcServer jsonRpcServer, List<JsonRpcServerCustomizer> customizers) {
-        for (JsonRpcServerCustomizer customizer : customizers) {
-            customizer.customize(jsonRpcServer);
-        }
-    }
-
     @Configuration(proxyBeanMethods = false)
-    @AutoConfigureAfter(TaskExecutionAutoConfiguration.class)
-    @ConditionalOnBean(ThreadPoolTaskExecutor.class)
-    @ConditionalOnProperty(prefix = JsonRpcProperties.JSONRPC_PREFIX, name = "server.parallel-enabled", matchIfMissing = false)
-    public static class JsonRpcServerParallelBatchConfiguration {
+    @ConditionalOnProperty(prefix = JsonRpcProperties.JSONRPC_PREFIX, name = "server.enabled", matchIfMissing = true)
+    public static class JsonRpcServerConfiguration {
+
+        @Bean
+        @ConditionalOnBean(RequestInterceptor.class)
+        public DelegatingRequestInterceptor delegatingRequestInterceptor(
+                ObjectProvider<RequestInterceptor> requestInterceptor) {
+            List<RequestInterceptor> interceptors = requestInterceptor.orderedStream().collect(Collectors.toList());
+            return new DelegatingRequestInterceptor(interceptors);
+        }
 
         @Bean
         @ConditionalOnMissingBean
-        public ExecutorService executorService(ThreadPoolTaskExecutor taskExecutor) {
-            return taskExecutor.getThreadPoolExecutor();
+        public JsonRpcServer jsonRpcServer(JsonRpcProperties jsonRpcProperties,
+                ObjectProvider<ObjectMapper> objectMapper,
+                List<? extends JsonRpcBaseService> jsonRpcBaseService,
+                ObjectProvider<DelegatingRequestInterceptor> requestInterceptor,
+                ObjectProvider<ErrorResolver> errorResolver,
+                ObjectProvider<JsonRpcInterceptor> jsonRpcInterceptor,
+                ObjectProvider<InvocationListener> invocationListener,
+                ObjectProvider<ConvertedParameterTransformer> convertedParameterTransformer,
+                ObjectProvider<HttpStatusCodeProvider> httpStatusCodeProvider,
+                ObjectProvider<ExecutorService> batchExecutorService,
+                List<JsonRpcServerCustomizer> jsonRpcServerCustomizers) {
+            JsonRpcMultiServer jsonRpcServer = new JsonRpcMultiServer(objectMapper.getIfAvailable(ObjectMapper::new));
+
+            jsonRpcServer.setBackwardsCompatible(jsonRpcProperties.getServer().getBackwardsCompatible());
+            jsonRpcServer.setAllowLessParams(jsonRpcProperties.getServer().getAllowLessParams());
+            jsonRpcServer.setAllowExtraParams(jsonRpcProperties.getServer().getAllowExtraParams());
+            jsonRpcServer.setRethrowExceptions(jsonRpcProperties.getServer().getRethrowExceptions());
+            jsonRpcServer.setShouldLogInvocationErrors(jsonRpcProperties.getServer().getShouldLogInvocationErrors());
+
+            requestInterceptor.ifAvailable(jsonRpcServer::setRequestInterceptor);
+            errorResolver.ifAvailable(jsonRpcServer::setErrorResolver);
+
+            List<JsonRpcInterceptor> jsonRpcInterceptors = jsonRpcInterceptor.orderedStream()
+                    .collect(Collectors.toList());
+            if (!CollectionUtils.isEmpty(jsonRpcInterceptors)) {
+                jsonRpcServer.setInterceptorList(jsonRpcInterceptors);
+            }
+
+            invocationListener.ifAvailable(jsonRpcServer::setInvocationListener);
+            convertedParameterTransformer.ifAvailable(jsonRpcServer::setConvertedParameterTransformer);
+            httpStatusCodeProvider.ifAvailable(jsonRpcServer::setHttpStatusCodeProvider);
+
+            batchExecutorService.ifAvailable(jsonRpcServer::setBatchExecutorService);
+            jsonRpcServer.setParallelBatchProcessingTimeout(
+                    jsonRpcProperties.getServer().getParallelBatchProcessingTimeout().toMillis());
+
+            if (StringUtils.hasText(jsonRpcProperties.getServer().getContentType())) {
+                jsonRpcServer.setContentType(jsonRpcProperties.getServer().getContentType());
+            }
+
+            this.addService(jsonRpcServer, jsonRpcBaseService);
+
+            this.customize(jsonRpcServer, jsonRpcServerCustomizers);
+
+            return jsonRpcServer;
         }
+
+        private void addService(JsonRpcMultiServer jsonRpcMultiServer,
+                List<? extends JsonRpcBaseService> jsonRpcBaseService) {
+            jsonRpcBaseService.stream().forEach(service -> {
+                JsonRpcMultiServiceName serviceNameAnnotation = AnnotationUtils.findAnnotation(service.getClass(),
+                        JsonRpcMultiServiceName.class);
+                if (serviceNameAnnotation == null) {
+                    return;
+                }
+
+                if (!StringUtils.hasText(serviceNameAnnotation.value())) {
+                    throw new IllegalArgumentException(
+                            "The value of JsonRpcMultiServiceNamed annotation must not be null");
+                }
+
+                Class<?> serviceInterface = Stream.of(service.getClass().getInterfaces())
+                        .filter(Objects::nonNull)
+                        .filter(t -> !Objects.equals(t.getCanonicalName(), JsonRpcBaseService.class.getCanonicalName()))
+                        .findFirst()
+                        .orElse(null);
+
+                jsonRpcMultiServer.addService(serviceNameAnnotation.value(), service, serviceInterface);
+            });
+        }
+
+        private void customize(JsonRpcServer jsonRpcServer, List<JsonRpcServerCustomizer> customizers) {
+            for (JsonRpcServerCustomizer customizer : customizers) {
+                customizer.customize(jsonRpcServer);
+            }
+        }
+
+        @Configuration(proxyBeanMethods = false)
+        @AutoConfigureAfter(TaskExecutionAutoConfiguration.class)
+        @ConditionalOnBean(ThreadPoolTaskExecutor.class)
+        @ConditionalOnProperty(prefix = JsonRpcProperties.JSONRPC_PREFIX, name = "server.parallel-enabled", matchIfMissing = false)
+        public static class JsonRpcServerParallelBatchConfiguration {
+
+            @Bean
+            @ConditionalOnMissingBean
+            public ExecutorService executorService(ThreadPoolTaskExecutor taskExecutor) {
+                return taskExecutor.getThreadPoolExecutor();
+            }
+        }
+
     }
 
 }
