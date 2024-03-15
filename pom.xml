@@ -22,11 +22,11 @@
   <parent>
     <groupId>com.youkol</groupId>
     <artifactId>youkol-parent</artifactId>
-    <version>5</version>
+    <version>7</version>
     <relativePath />
   </parent>
 
-  <groupId>com.youkol.support.jsonrpc4j</groupId>
+  <groupId>com.youkol.support</groupId>
   <artifactId>jsonrpc4j-spring-boot-starter</artifactId>
   <version>1.0.3-SNAPSHOT</version>
   <packaging>jar</packaging>
@@ -64,7 +64,7 @@
     <connection>scm:git:git://github.com/youkol/jsonrpc4j-spring-boot-starter.git</connection>
     <developerConnection>scm:git:git@github.com:youkol/jsonrpc4j-spring-boot-starter.git</developerConnection>
     <url>https://github.com/youkol/jsonrpc4j-spring-boot-starter</url>
-    <tag>v1.0.0</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <issueManagement>
